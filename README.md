@@ -1,2 +1,2 @@
 # Jetson TK 1 Learn
-![](bg.png)
+![](res/bg.png)
