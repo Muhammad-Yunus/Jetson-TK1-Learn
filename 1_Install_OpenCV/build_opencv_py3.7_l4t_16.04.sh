@@ -5,7 +5,7 @@ set -e
 
 # change default constants here:
 readonly PREFIX=/usr  # install prefix, (can be ~/.local for a user install)
-readonly DEFAULT_VERSION=4.5.3  # controls the default version (gets reset by the first argument)
+readonly DEFAULT_VERSION=4.1.0  # controls the default version (gets reset by the first argument)
 readonly CPUS=$(nproc)  # controls the number of jobs
 
 # better board detection. if it has 6 or more cpus, it probably has a ton of ram too
@@ -117,7 +117,7 @@ configure () {
         -D WITH_FFMPEG=ON
         -D WITH_GSTREAMER=ON
         -D WITH_GSTREAMER_0_10=OFF
-        -D WITH_GTK=ON 
+        -D WITH_GTK=ON
         -D WITH_VTK=OFF
         -D WITH_TBB=ON
         -D WITH_1394=OFF
@@ -127,7 +127,10 @@ configure () {
         -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-6.5
         -D CUDA_ARCH_BIN=3.2
         -D CUDA_FAST_MATH=ON
-        -D CUDA_NVCC_FLAGS='-ccbin gcc-4.8'
+	-D WITH_CUDNN=ON
+	-D CUDNN_VERSION='2.0'
+	-D CUDA_HOST_COMPILER=/usr/local/cuda/bin/gcc
+        -D OPENCV_DNN_CUDA=ON
         -D OPENCV_ENABLE_NONFREE=ON
         -D OPENCV_EXTRA_MODULES_PATH=~/build_opencv/opencv_contrib/modules
         -D OPENCV_GENERATE_PKGCONFIG=ON
@@ -164,7 +167,7 @@ main () {
     # prepare for the build:
     setup
     #install_dependencies
-    # git_source ${VER}
+    #git_source ${VER}
 
     if [[ ${DO_TEST} ]] ; then
         configure test
@@ -176,7 +179,7 @@ main () {
 
 
     # start the build
-    make -j${JOBS} 2>&1 | tee -a build.log
+    make  VERBOSE=1 -j${JOBS} 2>&1 | tee -a build.log
 
     if [[ ${DO_TEST} ]] ; then
         make test 2>&1 | tee -a test.log
