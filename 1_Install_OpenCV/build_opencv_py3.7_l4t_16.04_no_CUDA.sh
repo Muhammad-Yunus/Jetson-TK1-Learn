@@ -27,7 +27,7 @@ setup () {
         echo "It appears an existing build exists in ~/build_opencv"
         #cleanup
     fi
-    mkdir build_opencv
+    #mkdir build_opencv
     cd build_opencv
 }
 
@@ -103,13 +103,12 @@ configure () {
         -D BUILD_JASPER=OFF
         -D BUILD_ZLIB=OFF
         -D BUILD_EXAMPLES=OFF
+        -D BUILD_opencv_apps=OFF
         -D BUILD_opencv_java=OFF
         -D BUILD_opencv_python2=OFF
         -D BUILD_opencv_python3=ON
         -D PYTHON3_EXECUTABLE=/usr/local/bin/python3.7
-        -D PYTHON3_LIBRARY=/usr/local/lib/libpython3.7m.so
-        -D PYTHON3_INCLUDE=/usr/local/include/python3.7m
-        -D PYTHON3_PACKAGES_PATH=/home/ubuntu/.local/lib/python3.7/site-packages/
+        -D OPENCV_PYTHON3_INSTALL_PATH=/home/ubuntu/.local/lib/python3.7/site-packages
         -D PYTHON3_NUMPY_INCLUDE_DIRS=/home/ubuntu/.local/lib/python3.7/site-packages/numpy/core/include/
         -D ENABLE_NEON=ON
         -D WITH_OPENCL=ON
@@ -122,14 +121,7 @@ configure () {
         -D WITH_TBB=ON
         -D WITH_1394=OFF
         -D WITH_OPENEXR=OFF
-        -D WITH_CUDA=ON
-        -D WITH_CUBLAS=ON
-        -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-6.5
-        -D CUDA_ARCH_BIN=3.2
-        -D CUDA_FAST_MATH=ON
-	    -D CUDNN_VERSION='2.0'
-	    -D CUDA_HOST_COMPILER=/usr/local/cuda/bin/gcc
-        -D OPENCV_DNN_CUDA=OFF
+        -D WITH_CUDA=OFF
         -D OPENCV_ENABLE_NONFREE=ON
         -D OPENCV_EXTRA_MODULES_PATH=~/build_opencv/opencv_contrib/modules
         -D OPENCV_GENERATE_PKGCONFIG=ON
@@ -145,7 +137,7 @@ configure () {
     echo "cmake flags: ${CMAKEFLAGS}"
 
     cd opencv
-    mkdir build
+    #mkdir build
     cd build
     cmake ${CMAKEFLAGS} .. 2>&1 | tee -a configure.log
 }
@@ -165,8 +157,8 @@ main () {
 
     # prepare for the build:
     setup
-    install_dependencies
-    git_source ${VER}
+    #install_dependencies
+    #git_source ${VER}
 
     if [[ ${DO_TEST} ]] ; then
         configure test
@@ -178,7 +170,8 @@ main () {
 
 
     # start the build
-    make  -j${JOBS} 2>&1 | tee -a build.log
+    echo "USE ${JOBS} JOBS"
+    make -j ${JOBS} 2>&1 | tee -a build.log
 
     if [[ ${DO_TEST} ]] ; then
         make test 2>&1 | tee -a test.log
